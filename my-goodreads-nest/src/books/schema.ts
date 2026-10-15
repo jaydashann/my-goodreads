@@ -1,13 +1,18 @@
-import { pgTable, serial, text, integer, doublePrecision, timestamp, date } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, doublePrecision, timestamp, date, pgEnum } from "drizzle-orm/pg-core";
 import { users } from "../users/schema.js";
 
-export const BOOK_STATUS = [
+export const bookStatus = pgEnum('status', [
     'want-to-read',  
     'currently-reading', 
     'read', 
     'did-not-finish'
-] as const;
-export type bookStatus = (typeof BOOK_STATUS)[number];
+]);
+
+export type BookStatus = 
+    | 'want-to-read'
+    | 'currently-reading'
+    | 'read'
+    | 'did-not-finish';
 
 export const books = pgTable('books', {
     id: serial('id').primaryKey(),
@@ -15,7 +20,7 @@ export const books = pgTable('books', {
     title: text('title'),
     author: text('author'),
     decription: text('description'),
-    status: text('status').$type<bookStatus>().default('want-to-read').notNull(),
+    status: bookStatus('status').default('want-to-read'),
     rating: doublePrecision('rating'),
     notes: text('notes'),
     started_at: timestamp('started_at'),

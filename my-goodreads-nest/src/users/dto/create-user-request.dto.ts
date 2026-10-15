@@ -1,6 +1,7 @@
-import { IsEmail } from 'class-validator';
+import z from 'zod';
 
-export class CreateUserRequestDto {
-    @IsEmail()
-    email: string;
-}
+export const userSchema = z.object({
+    email: z.email(),
+}).required();
+
+export type CreateUserRequestDto = z.infer<typeof userSchema>;

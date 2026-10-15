@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Patch } from '@nestjs/common';
 import { UsersService } from './users.service.js';
-import { CreateUserRequestDto } from './dto/create-user-request.dto.js';
+import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
+import type { CreateUserRequestDto } from './dto/create-user-request.dto.js';
+import { userSchema } from './dto/create-user-request.dto.js';
 
 @Controller('users')
 export class UsersController {
@@ -12,7 +14,17 @@ export class UsersController {
     }
 
     @Post()
-    async createUser(@Body() request: CreateUserRequestDto) {
+    async createUser(@Body(new ZodValidationPipe(userSchema)) request: CreateUserRequestDto) {
         return this.usersService.createUser(request)
+    }
+
+    @Patch('/:userId')
+    async updateUser() {
+        
+    }
+
+    @Delete('/:userId')
+    async removeUser() {
+
     }
 }

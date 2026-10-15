@@ -1,36 +1,22 @@
-import { IsString, IsNumber, IsOptional, IsEnum, IsDateString, IsIn, Min, Max } from 'class-validator';
-import { BOOK_STATUS } from '../schema.js';
+import z from 'zod';
+import { bookStatus } from '../schema.js';
 
-export class CreateBookDto {
-    @IsString()
-    title: string;
-
-    @IsOptional()
-    @IsString()
-    author?: string;
-
-    @IsOptional()
-    @IsString()
-    decription?: string;
-
-    @IsOptional()
-    @IsIn(BOOK_STATUS)
-    status?: (typeof BOOK_STATUS)[number];
-    
-    @IsNumber()
-    @Min(0)
-    @Max(5)
-    rating: number;
-
-    @IsOptional()
-    @IsString()
-    notes?: string;
-
-    @IsOptional()
-    @IsDateString()
-    started_at?: string;
-
-    @IsOptional()
-    @IsDateString()
-    completed_at?: string;
+export enum Status {
+  WantToRead = 'want-to-read',
+  CurrentlyReading = 'currently-reading',
+  Read = 'read',
+  DidNotFinish = 'did-not-finish',
 }
+
+export const bookSchema = z.object({
+    title: z.string(),
+    author: z.string(),
+    decription: z.string(),
+    status: z.enum(bookStatus.enumValues),
+    rating: z.number(),
+    notes: z.string(),
+    started_at: z.coerce.date(),
+    completed_at: z.coerce.date(),
+}).required();
+
+export type CreateBookDto = z.infer<typeof bookSchema>;
