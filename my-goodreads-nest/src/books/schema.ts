@@ -1,7 +1,13 @@
 import { pgTable, serial, text, integer, doublePrecision, timestamp, date } from "drizzle-orm/pg-core";
 import { users } from "../users/schema.js";
 
-export type bookStatus = 'want-to-read' | 'currently-reading' | 'read' | 'did-not-finish';
+export const BOOK_STATUS = [
+    'want-to-read',  
+    'currently-reading', 
+    'read', 
+    'did-not-finish'
+] as const;
+export type bookStatus = (typeof BOOK_STATUS)[number];
 
 export const books = pgTable('books', {
     id: serial('id').primaryKey(),
