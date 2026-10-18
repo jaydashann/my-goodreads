@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Patch, Delete } from '@nestjs/common';
 import { BooksService } from './books.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
 import type { CreateBookDto } from './dto/create-book.dto.js';
@@ -16,5 +16,15 @@ export class BooksController {
     @Post()
     async createBook(@Body(new ZodValidationPipe(bookSchema)) request: CreateBookDto) {
         return this.booksService.createBook(request)
+    }
+
+    @Patch('/:bookId')
+    async updateBook() {
+        
+    }
+
+    @Delete('/:bookId')
+    async removeBook() {
+        
     }
 }

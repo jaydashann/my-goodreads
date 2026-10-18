@@ -4,4 +4,4 @@ export const userSchema = z.object({
     email: z.email(),
 }).required();
 
-export type CreateUserRequestDto = z.infer<typeof userSchema>;
+export type CreateUserDto = z.infer<typeof userSchema>;
