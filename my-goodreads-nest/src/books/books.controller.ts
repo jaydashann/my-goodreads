@@ -29,7 +29,7 @@ export class BooksController {
         return this.booksService.createBook(request)
     }
 
-    @Patch(':bookId')
+    @Patch(':id')
     async updateBook(
         @Param('id', ParseIntPipe) id: number,
         @Body(new ZodValidationPipe(UpdateBookSchema)) request: UpdateBookDto,
@@ -37,7 +37,7 @@ export class BooksController {
         return this.booksService.updateBook(id, request);
     }
 
-    @Delete(':bookId')
+    @Delete(':id')
     async removeBook(@Param('id', ParseIntPipe) id: number) {
         return this.booksService.removeBook(id);
     }

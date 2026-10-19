@@ -37,6 +37,14 @@ export class UsersService {
                 throw new ConflictException(`Email already exists: ${data.email}`);
             }
         }
+
+        const [ updatedUser ] = await this.database
+            .update(schema.users)
+            .set(data)
+            .where(eq(schema.users.id, id))
+            .returning();
+
+        return updatedUser;
     }
 
     async removeUser(id: number) {
