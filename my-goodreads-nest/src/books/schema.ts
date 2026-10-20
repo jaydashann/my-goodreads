@@ -17,9 +17,10 @@ export type BookStatus =
 export const books = pgTable('books', {
     id: uuid('id').defaultRandom().primaryKey(),
     user_id: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    book_cover: text('book_cover'),
     title: text('title'),
     author: text('author'),
-    decription: text('description'),
+    description: text('description'),
     status: bookStatus('status').default('want-to-read'),
     rating: doublePrecision('rating'),
     notes: text('notes'),
