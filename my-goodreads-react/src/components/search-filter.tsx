@@ -1,10 +1,10 @@
 import { IoSearch } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 
-export function SearchFilter() {
+export default function SearchFilter() {
     return (
         <div>
-            <div className="mb-6 hover:scale-102 transition-all">
+            <div className="mb-6">
                 <div className="flex items-center rounded-md p-2 gap-2 bg-primary">
                     <IoSearch className="text-background" />
                     <input
