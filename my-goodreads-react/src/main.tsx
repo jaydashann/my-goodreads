@@ -6,6 +6,8 @@ import ReactQueryProvider from './provider/ReactQueryProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ReactQueryProvider><App /></ReactQueryProvider>
+    <ReactQueryProvider>
+      <App />
+    </ReactQueryProvider>
   </StrictMode>,
 );

@@ -3,8 +3,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: #6a795d;
-  --color-primary: #f2f2eb;
-  --color-dark: #8b9a6e;
+  --color-background: #2F4F3E;
+  --color-form: #E4ECDF;
+  --color-textcolor: #1F2A24;
+  --color-captioncolor: #5A6B60;
+  --color-primary: #F7F5EE;
+  --color-secondary: #A9BFA0;
+  --color-accent: #F2A65A;
 }
 
