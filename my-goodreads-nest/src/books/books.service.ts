@@ -17,18 +17,17 @@ export class BooksService {
         return this.database.query.books.findMany();
     }
 
-    async createBook(book: CreateBookDto) {
+    async createBook(userId: string, book: CreateBookDto, coverImage?: string) {
         const { started_at, completed_at, ...rest } = book;
 
         return this.database.insert(schema.books).values({
             ...rest,
-            user_id: 1,
-            started_at: started_at ? new Date(started_at) : null,
-            completed_at: completed_at ? new Date(completed_at) : null,
+            user_id: userId,
+            book_cover: coverImage ?? null,
         }).returning();
     }
 
-    async updateBook(id: number, data: UpdateBookDto) {
+    async updateBook(id: string, data: UpdateBookDto) {
         const existingBook = await this.database.query.books.findFirst({
             where: eq(schema.books.id, id),
         });
@@ -65,7 +64,7 @@ export class BooksService {
         return updatedBook;
     }
 
-    async removeBook(id: number) {
+    async removeBook(id: string) {
         const existingBook = await this.database.query.books.findFirst({
             where: eq(schema.books.id, id)
         });

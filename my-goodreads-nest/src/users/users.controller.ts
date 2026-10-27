@@ -33,14 +33,14 @@ export class UsersController {
 
     @Patch(':id')
     async updateUser(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id', ParseIntPipe) id: string,
         @Body(new ZodValidationPipe(UpdateUserSchema)) request: UpdateUserDto,
     ) {
         return this.usersService.updateUser(id, request);
     }
 
     @Delete(':id')
-    async removeUser(@Param('id', ParseIntPipe) id: number) {
+    async removeUser(@Param('id', ParseIntPipe) id: string) {
         return this.usersService.removeUser(id);
     }
 }

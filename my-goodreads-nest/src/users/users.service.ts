@@ -16,10 +16,14 @@ export class UsersService {
     }
 
     async createUser(user: typeof schema.users.$inferInsert) {
-        await this.database.insert(schema.users).values(user);
+        const [createUser] = await this.database
+            .insert(schema.users)
+            .values(user)
+            .returning()
+        return createUser;
     }
 
-    async updateUser(id: number, data: UpdateUserDto) {
+    async updateUser(id: string, data: UpdateUserDto) {
         const existingUser = await this.database.query.users.findFirst({
             where: eq(schema.users.id, id),
         });
@@ -47,7 +51,7 @@ export class UsersService {
         return updatedUser;
     }
 
-    async removeUser(id: number) {
+    async removeUser(id: string) {
         const existingUser = await this.database.query.users.findFirst({
             where: eq(schema.users.id, id),
         });

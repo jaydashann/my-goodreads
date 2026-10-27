@@ -6,7 +6,8 @@ import {
     Delete, 
     Patch, 
     Param,
-    ParseIntPipe
+    ParseIntPipe,
+    UploadedFile
 } from '@nestjs/common';
 import { BooksService } from './books.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -25,20 +26,23 @@ export class BooksController {
     } 
 
     @Post()
-    async createBook(@Body(new ZodValidationPipe(bookSchema)) request: CreateBookDto) {
+    async createBook(
+        @Body(new ZodValidationPipe(bookSchema)) request: CreateBookDto
+        @UploadedFile() book_cover?: Express.Multer.File,
+    ) {
         return this.booksService.createBook(request)
     }
 
     @Patch(':id')
     async updateBook(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id', ParseIntPipe) id: string,
         @Body(new ZodValidationPipe(UpdateBookSchema)) request: UpdateBookDto,
     ) {
         return this.booksService.updateBook(id, request);
     }
 
     @Delete(':id')
-    async removeBook(@Param('id', ParseIntPipe) id: number) {
+    async removeBook(@Param('id', ParseIntPipe) id: string) {
         return this.booksService.removeBook(id);
     }
 }
