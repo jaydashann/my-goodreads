@@ -15,8 +15,8 @@ export const UpdateBookSchema = z.object({
     status: z.enum(bookStatus.enumValues),
     rating: z.coerce.number(),
     notes: z.string(),
-    started_at: z.coerce.date(),
-    completed_at: z.coerce.date(),
+    started_at: z.coerce.string(),
+    completed_at: z.string(),
 }).partial();
 
 export type UpdateBookDto = z.infer<typeof UpdateBookSchema>;

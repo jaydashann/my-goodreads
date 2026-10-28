@@ -6,7 +6,8 @@ import {
     Delete, 
     Patch, 
     Param,
-    ParseIntPipe
+    UploadedFile,
+    UseInterceptors
 } from '@nestjs/common';
 import { BooksService } from './books.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -15,7 +16,6 @@ import { bookSchema } from './dto/create-book.dto.js';
 import type { UpdateBookDto } from './dto/update-book.dto.js';
 import { UpdateBookSchema } from './dto/update-book.dto.js';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadedFile, UseInterceptors } from '@nestjs/common';
 import { coverUploadOptions } from './cover-upload.js';
 
 @Controller('books')
@@ -33,13 +33,14 @@ export class BooksController {
         @Body(new ZodValidationPipe(bookSchema)) request: CreateBookDto,
         @UploadedFile() book_cover?: Express.Multer.File,
     ) {
-        return this.booksService.createBook(request, book_cover?.filename);
+        const tempUser = "d24003d1-6c03-449b-91d2-e95c62a479d8"
+        return this.booksService.createBook(tempUser, request, book_cover?.filename)
     }
 
     @Patch(':id')
     @UseInterceptors(FileInterceptor('book_cover', coverUploadOptions))
     async updateBook(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id') id: string,
         @Body(new ZodValidationPipe(UpdateBookSchema)) request: UpdateBookDto,
         @UploadedFile() book_cover?: Express.Multer.File,
     ) {
@@ -48,7 +49,7 @@ export class BooksController {
     }
 
     @Delete(':id')
-    async removeBook(@Param('id', ParseIntPipe) id: number) {
+    async removeBook(@Param('id') id: string) {
         return this.booksService.removeBook(id);
     }
 }
