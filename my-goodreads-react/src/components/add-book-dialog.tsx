@@ -3,14 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { publicInstance } from "../api/api";
 import { 
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-  DialogDescription
-
+  DialogTitle
  } from "./ui/dialog";
 import { Button } from "./ui/button";
 import StarRating from "./star-rating";

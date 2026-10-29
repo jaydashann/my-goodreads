@@ -1,13 +1,14 @@
 import { publicInstance } from "../api/api";
 import { useQuery } from "@tanstack/react-query";
 import Card from "./card";
+import { Star } from "./star-rating";
 
 const ASPECTS = [
-    "aspect-[9/16]",
-    "aspect-[3/5]",
+    //"aspect-[9/16]",
+    //"aspect-[3/5]",
     "aspect-[2/3]",
-    "aspect-[3/4]",
-    "aspect-[4/5]",
+    //"aspect-[3/4]",
+    //"aspect-[4/5]",
 ];
 
 type Books = {
@@ -39,6 +40,13 @@ function getCoverUrl(cover: string | null): string | null {
   return `${API_BASE_URL}/uploads/covers/${cover.replace(/^\//, "")}`; 
 }
 
+const STATUS_VALUES: Record<string, string> = {
+        "want-to-read": "Want To Read",
+        "currently-reading": "Currently Reading",
+        "read": "Read",
+        "did-not-finish": "Did Not Finish",
+    };
+
 
 export default function Tiles() {
     const {
@@ -58,15 +66,30 @@ export default function Tiles() {
             {data.map((book, i) => (
                 <div
                     key={book.id}
-                    className={`${ASPECTS[(i * 3 + (i % 4)) % ASPECTS.length]} text-center text-textcolor mb-4 break-inside-avoid rounded-2xl bg-primary p-4 transition-all hover:scale-102`}
+                    className="text-center text-textcolor mb-4 break-inside-avoid rounded-2xl bg-primary p-4 transition-all hover:scale-102"
                 >
-                    <Card 
-                        image={getCoverUrl(book.book_cover)}
-                    />
-                    <h1>{book.title}</h1>
-                    <h1>{book.author}</h1>
-                    <h1>{book.status}</h1>
-                    <h1>{book.rating}</h1>
+                    <div className={`${ASPECTS[(i * 3 + (i % 4)) % ASPECTS.length]} w-full overflow-hidden rounded`}>
+                        <Card image={getCoverUrl(book.book_cover)}/>
+                    </div>
+                    <div className="bg-background text-primary font-semibold p-1 m-2 mb-1 rounded">
+                        <h1>{book.title}</h1>
+                    </div>
+                    <div className="">
+                        <h1>by {book.author}</h1>        
+                    </div>
+                    <div className="mb-1">
+                        <h1>{STATUS_VALUES[book.status] ?? book.status}</h1>
+                    </div>
+                    <div className="flex items-center justify-center">
+                        <h1 className="mr-1 font-semibold">{book.rating}</h1>
+                        {...Array.from({ length: 5 }, (_, index) => (
+                            <Star
+                                key={index}
+                                size={22}
+                                fill={Math.max(0, Math.min(book.rating - index, 1))}
+                            />
+                        ))}
+                    </div>
                 </div>
             ))}
         </div>

@@ -42,6 +42,8 @@ const Star = ({ fill = 0, size = 30, ...props }) => {
     );
 };
 
+export { Star }; 
+
 const StarRating = ({ 
     value, 
     onChange, 

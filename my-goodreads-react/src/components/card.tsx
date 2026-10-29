@@ -2,7 +2,7 @@ type CardProps = { image: string | null };
 
 const Card = ({ image }: CardProps) => {
     return (
-        <div className="max-w-sm rounded overflow-hidden shadow-lg">
+        <div className="max-w-sm rounded overflow-hidden shadow-md">
             {image ? ( 
                 <img className="w-full" src={image} />
             ) : (
