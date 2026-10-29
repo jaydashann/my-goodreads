@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@source "../node_modules/react-tailwindcss-datepicker/dist/index.esm.js";
+@source inline("{block,hidden,opacity-0,opacity-100,translate-y-0,translate-y-4}");
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -10,5 +13,9 @@
   --color-primary: #F7F5EE;
   --color-secondary: #A9BFA0;
   --color-accent: #F2A65A;
+}
+
+.opacity-1 {
+  opacity: 1 !important;
 }
 

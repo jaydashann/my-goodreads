@@ -36,7 +36,7 @@ async function fetchBookData() {
 function getCoverUrl(cover: string | null): string | null {
   if (!cover) return null;
   if (cover.startsWith("http")) return cover; 
-  return `${API_BASE_URL}/uploads/cover/${cover.replace(/^\//, "")}`; 
+  return `${API_BASE_URL}/uploads/covers/${cover.replace(/^\//, "")}`; 
 }
 
 
