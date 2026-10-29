@@ -2,9 +2,7 @@ import Tiles from "../components/tiles";
 import SearchFilter from "../components/search-filter";
 import { Button } from "../components/ui/button";
 import { AddBook } from "../components/add-book-dialog";
-// import { Form } from "react-router-dom";
 import { useState } from "react";
-import Datepicker, { type DateValueType } from "react-tailwindcss-datepicker";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);

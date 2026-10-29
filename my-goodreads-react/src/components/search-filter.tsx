@@ -64,12 +64,12 @@ export default function SearchFilter() {
                     />
                     {searchQuery.length > 0 && (<IoIosCloseCircle className="text-textcolor mr-1" onClick={clearSearchQuery}/>)}
                 </div>
-                {searchQuery.length > 0 && (<div className="absolute max-h-[200px] w-full overflow-auto flex flex-col p-2 bg-primary shadow-2xl">
+                {searchQuery.length > 0 && (<div className="absolute max-h-[200px] w-full overflow-auto flex flex-col p-1 bg-accent/80 shadow-2xl rounded">
                     {filterData.length !== 0 ? filterData?.map((books, i) => (
-                        <div key={i} className="flex gap-4 items-center hover:bg-background/50 p-2 pointer-cursor">
+                        <div key={i} className="flex items-center hover:bg-primary/50 rounded p-2 pl-3 pointer-cursor text-background">
                             <div>{`${books.title}`}</div>
                         </div>
-                    )): <div>No book available</div>}
+                    )): <div className="flex items-center justify-center text-sm text-background font-semibold p-2">No book available</div>}
                 </div>)}
             </div>
             
