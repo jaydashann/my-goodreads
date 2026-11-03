@@ -7,7 +7,8 @@ import {
     Patch, 
     Param,
     UploadedFile,
-    UseInterceptors
+    UseInterceptors,
+    ParseUUIDPipe
 } from '@nestjs/common';
 import { BooksService } from './books.service.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
@@ -40,7 +41,7 @@ export class BooksController {
     @Patch(':id')
     @UseInterceptors(FileInterceptor('book_cover', coverUploadOptions))
     async updateBook(
-        @Param('id') id: string,
+        @Param('id', ParseUUIDPipe) id: string,
         @Body(new ZodValidationPipe(UpdateBookSchema)) request: UpdateBookDto,
         @UploadedFile() book_cover?: Express.Multer.File,
     ) {
@@ -49,7 +50,7 @@ export class BooksController {
     }
 
     @Delete(':id')
-    async removeBook(@Param('id') id: string) {
+    async removeBook(@Param('id', ParseUUIDPipe) id: string) {
         return this.booksService.removeBook(id);
     }
 }
