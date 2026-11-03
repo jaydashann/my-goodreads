@@ -134,7 +134,7 @@ function AddBook({ open, onOpenChange }: AddBookProps) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="border-black overflow-visible">
+            <DialogContent className="border-primary overflow-visible">
                 <DialogHeader>
                     <DialogTitle>Add New Book</DialogTitle>
                 </DialogHeader>

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { publicInstance } from "../api/api";
 import { useQuery } from "@tanstack/react-query";
 import Card from "./card";
 import { Star } from "./star-rating";
+import { BookInfo } from "./book-info-dialog";
 
 const ASPECTS = [
     //"aspect-[9/16]",
@@ -29,12 +31,12 @@ type Books = {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-async function fetchBookData() {
+export async function fetchBookData() {
     const result = await publicInstance.get<Books[]>('/books')
     return result.data
 };
 
-function getCoverUrl(cover: string | null): string | null {
+export function getCoverUrl(cover: string | null): string | null {
   if (!cover) return null;
   if (cover.startsWith("http")) return cover; 
   return `${API_BASE_URL}/uploads/covers/${cover.replace(/^\//, "")}`; 
@@ -49,6 +51,8 @@ const STATUS_VALUES: Record<string, string> = {
 
 
 export default function Tiles() {
+    const [selectedBook, setSelectedBook] = useState<Books | null>(null);
+
     const {
         status,
         data,
@@ -67,7 +71,15 @@ export default function Tiles() {
                 <div
                     key={book.id}
                     className="text-center text-textcolor mb-4 break-inside-avoid rounded-2xl bg-primary p-4 transition-all hover:scale-102"
+                    onClick={() => setSelectedBook(book)}
                 >
+                    <BookInfo 
+                        book={selectedBook} 
+                        open={selectedBook !== null} 
+                        onOpenChange={(open) => {
+                            if (!open) setSelectedBook(null);
+                        }}
+                    />
                     <div className={`${ASPECTS[(i * 3 + (i % 4)) % ASPECTS.length]} w-full overflow-hidden rounded`}>
                         <Card image={getCoverUrl(book.book_cover)}/>
                     </div>
