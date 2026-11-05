@@ -28,6 +28,11 @@ export class BooksController {
     return this.booksService.getBooks();
   }
 
+  @Get(':id')
+  async getBookById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.booksService.getBookById(id);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('book_cover', coverUploadOptions))
   async createBook(
