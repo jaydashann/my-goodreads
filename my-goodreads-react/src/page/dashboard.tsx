@@ -1,8 +1,8 @@
-import Tiles from "../components/tiles";
-import SearchFilter from "../components/search-filter";
-import { Button } from "../components/ui/button";
-import { AddBook } from "../components/add-book-dialog";
 import { useState } from "react";
+import { AddBook } from "../components/add-book-dialog";
+import SearchFilter from "../components/search-filter";
+import Tiles from "../components/tiles";
+import { Button } from "../components/ui/button";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -11,14 +11,12 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background px-4 py-6">
       <div className="flex gap-3">
         <div className="flex-1">
-          <SearchFilter/>
+          <SearchFilter />
         </div>
         <Button onClick={() => setOpen(true)}>Add Book</Button>
         <AddBook open={open} onOpenChange={setOpen} />
-
-        
       </div>
-      <Tiles/>
+      <Tiles />
     </div>
   );
 }
