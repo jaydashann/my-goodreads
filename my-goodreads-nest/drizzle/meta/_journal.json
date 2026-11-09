@@ -15,6 +15,20 @@
       "when": 1792457917610,
       "tag": "0001_futuristic_harpoon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793840579902,
+      "tag": "0002_uneven_gertrude_yorkes",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793842490306,
+      "tag": "0003_furry_hedge_knight",
+      "breakpoints": true
     }
   ]
 }
