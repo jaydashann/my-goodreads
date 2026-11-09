@@ -27,13 +27,15 @@ export class BooksService {
     await unlink(join(COVERS_DIR, filename)).catch(() => {});
   }
 
-  async getBooks() {
-    return this.database.query.books.findMany();
+  async getBooks(userId: string) {
+    return this.database.query.books.findMany({
+      where: eq(books.user_id, userId),
+    });
   }
 
-  async getBookById(id: string) {
+  async getBookById(userId: string, id: string) {
     return await this.database.query.books.findFirst({
-      where: eq(books.id, id),
+      where: and(eq(books.user_id, userId), eq(books.id, id)),
     });
   }
 
@@ -50,9 +52,14 @@ export class BooksService {
       .returning();
   }
 
-  async updateBook(id: string, data: UpdateBookDto, coverImage?: string) {
+  async updateBook(
+    userId: string,
+    id: string,
+    data: UpdateBookDto,
+    coverImage?: string,
+  ) {
     const existingBook = await this.database.query.books.findFirst({
-      where: eq(schema.books.id, id),
+      where: and(eq(books.user_id, userId), eq(books.id, id)),
     });
 
     if (existingBook === undefined) {
@@ -65,6 +72,7 @@ export class BooksService {
     if (title !== existingBook.title || author !== existingBook.author) {
       const duplicate = await this.database.query.books.findFirst({
         where: and(
+          eq(schema.books.user_id, userId),
           ne(schema.books.id, id),
           title === null
             ? isNull(schema.books.title)
@@ -85,25 +93,29 @@ export class BooksService {
     const [updatedBook] = await this.database
       .update(schema.books)
       .set({ ...data, ...(coverImage && { book_cover: coverImage }) })
-      .where(eq(schema.books.id, id))
+      .where(and(eq(books.user_id, userId), eq(books.id, id)))
       .returning();
 
     if (coverImage) await this.deleteCoverFile(existingBook.book_cover);
     return updatedBook;
   }
 
-  async removeBook(id: string) {
+  async removeBook(userId: string, id: string) {
     const existingBook = await this.database.query.books.findFirst({
-      where: eq(schema.books.id, id),
+      where: and(eq(books.user_id, userId), eq(books.id, id)),
     });
 
     if (existingBook === undefined) {
       throw new NotFoundException(`No book ID: ${id}`);
     }
 
-    await this.database.delete(schema.books).where(eq(schema.books.id, id));
+    await this.database
+      .delete(schema.books)
+      .where(and(eq(books.user_id, userId), eq(books.id, id)));
 
-    await this.database.delete(schema.books).where(eq(schema.books.id, id));
+    await this.database
+      .delete(schema.books)
+      .where(and(eq(books.user_id, userId), eq(books.id, id)));
     await this.deleteCoverFile(existingBook.book_cover);
     return { id };
   }
