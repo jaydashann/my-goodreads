@@ -3,8 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { DefaultLogger, LogWriter } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import * as bookSchema from '../books/schema.js';
-import * as userSchema from '../users/schema.js';
 import { DATABASE_CONNECTION } from './database-connection.js';
 import * as schema from './index.js';
 

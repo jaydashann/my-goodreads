@@ -11,28 +11,32 @@ import { and, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from '../database/database-connection.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
-import * as schema from './schema.js';
+// import * as schema from './schema.js';
+import type { AppRawDbConnection } from '../database/db.js';
+import { users } from '../database/index.js';
+import { VALID_MODULES_FOR_ADMIN_ROLE } from '../system-module/system-module.enum.js';
+import { Role } from './dto/create-user.dto.js';
 import { UserRecord, userRefreshTokensTable, usersTable } from './schema.js';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(DATABASE_CONNECTION)
-    private readonly database: NodePgDatabase<typeof schema>,
+    private readonly database: AppRawDbConnection,
   ) {}
 
   async getUsers() {
-    return this.database.query.usersTable.findMany();
+    return this.database.query.users.findMany();
   }
 
   async findUserByEmail(email: string) {
-    return await this.database.query.usersTable.findFirst({
+    return await this.database.query.users.findFirst({
       where: eq(usersTable.email, email),
     });
   }
 
   async findUserById(id: string) {
-    return await this.database.query.usersTable.findFirst({
+    return await this.database.query.users.findFirst({
       where: eq(usersTable.id, id),
     });
   }
@@ -70,7 +74,7 @@ export class UsersService {
     tokenExpiresAt,
     dateNow,
   }: {
-    currentUser: schema.UserRecord;
+    currentUser: UserRecord;
     tokenId: string;
     tokenValue: string;
     tokenExpiresAt: Date;
@@ -108,7 +112,7 @@ export class UsersService {
     tokenId,
     dateNow,
   }: {
-    currentUser: schema.UserRecord;
+    currentUser: UserRecord;
     tokenId: string;
     dateNow: Date;
   }) {
@@ -139,7 +143,7 @@ export class UsersService {
   }
 
   async createUser(user: typeof usersTable.$inferInsert) {
-    const existingEmail = await this.database.query.usersTable.findFirst({
+    const existingEmail = await this.database.query.users.findFirst({
       where: eq(usersTable.email, user.email),
     });
 
@@ -148,7 +152,7 @@ export class UsersService {
     }
 
     const [data] = await this.database
-      .insert(schema.usersTable)
+      .insert(usersTable)
       .values({
         ...user,
         password: await hash(user.password),
@@ -158,8 +162,8 @@ export class UsersService {
   }
 
   async updateUser(id: string, data: UpdateUserDto) {
-    const existingUser = await this.database.query.usersTable.findFirst({
-      where: eq(schema.usersTable.id, id),
+    const existingUser = await this.database.query.users.findFirst({
+      where: eq(usersTable.id, id),
     });
 
     if (existingUser === undefined) {
@@ -167,8 +171,8 @@ export class UsersService {
     }
 
     if (data.email !== undefined && data.email !== existingUser.email) {
-      const emailTaken = await this.database.query.usersTable.findFirst({
-        where: eq(schema.usersTable.email, data.email),
+      const emailTaken = await this.database.query.users.findFirst({
+        where: eq(usersTable.email, data.email),
       });
 
       if (emailTaken !== undefined) {
@@ -177,26 +181,24 @@ export class UsersService {
     }
 
     const [updatedUser] = await this.database
-      .update(schema.usersTable)
+      .update(usersTable)
       .set(data)
-      .where(eq(schema.usersTable.id, id))
+      .where(eq(usersTable.id, id))
       .returning();
 
     return updatedUser;
   }
 
   async removeUser(id: string) {
-    const existingUser = await this.database.query.usersTable.findFirst({
-      where: eq(schema.usersTable.id, id),
+    const existingUser = await this.database.query.users.findFirst({
+      where: eq(usersTable.id, id),
     });
 
     if (existingUser === undefined) {
       throw new NotFoundException(`No user ID: ${id}`);
     }
 
-    await this.database
-      .delete(schema.usersTable)
-      .where(eq(schema.usersTable.id, id));
+    await this.database.delete(usersTable).where(eq(usersTable.id, id));
 
     return { id };
   }

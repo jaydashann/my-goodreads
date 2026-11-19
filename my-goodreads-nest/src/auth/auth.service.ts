@@ -138,7 +138,7 @@ export class AuthService {
       expires: expiresRefreshToken,
     });
 
-    response.cookie('Refresh', refreshToken, {
+    response.cookie('Authentication', accessToken, {
       // domain: localhost
       httpOnly: true,
       secure: NODE_ENV === 'production',

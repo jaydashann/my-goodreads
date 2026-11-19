@@ -9,6 +9,7 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DATABASE_CONNECTION } from '../database/database-connection.js';
+import type { AppDb } from '../database/db.js';
 import { COVERS_DIR } from './cover-upload.js';
 import { CreateBookDto } from './dto/create-book.dto.js';
 import { UpdateBookDto } from './dto/update-book.dto.js';
@@ -19,7 +20,7 @@ import { booksTable } from './schema.js';
 export class BooksService {
   constructor(
     @Inject(DATABASE_CONNECTION)
-    private readonly database: NodePgDatabase<typeof schema>,
+    private readonly database: AppDb,
   ) {}
 
   private async deleteCoverFile(filename?: string | null) {
@@ -28,13 +29,13 @@ export class BooksService {
   }
 
   async getBooks(userId: string) {
-    return this.database.query.booksTable.findMany({
+    return this.database.query.books.findMany({
       where: eq(booksTable.user_id, userId),
     });
   }
 
   async getBookById(userId: string, id: string) {
-    return await this.database.query.booksTable.findFirst({
+    return await this.database.query.books.findFirst({
       where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
     });
   }
@@ -58,7 +59,7 @@ export class BooksService {
     data: UpdateBookDto,
     coverImage?: string,
   ) {
-    const existingBook = await this.database.query.booksTable.findFirst({
+    const existingBook = await this.database.query.books.findFirst({
       where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
     });
 
@@ -70,7 +71,7 @@ export class BooksService {
     const author = data.author ?? existingBook.author;
 
     if (title !== existingBook.title || author !== existingBook.author) {
-      const duplicate = await this.database.query.booksTable.findFirst({
+      const duplicate = await this.database.query.books.findFirst({
         where: and(
           eq(schema.booksTable.user_id, userId),
           ne(schema.booksTable.id, id),
@@ -101,7 +102,7 @@ export class BooksService {
   }
 
   async removeBook(userId: string, id: string) {
-    const existingBook = await this.database.query.booksTable.findFirst({
+    const existingBook = await this.database.query.books.findFirst({
       where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
     });
 

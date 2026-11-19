@@ -22,8 +22,8 @@ import { OptionalJwtAuthGuard } from './guard/optional-jwt.guard.js';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   async login(
     @CurrentUser() user: User,
     @Res({ passthrough: true }) response: Response,
@@ -31,8 +31,8 @@ export class AuthController {
     return await this.authService.createAuthTokens(user, response);
   }
 
-  @UseGuards(OptionalJwtAuthGuard)
   @Delete('logout')
+  @UseGuards(OptionalJwtAuthGuard)
   async logout(
     @Req()
     req: Request & {
