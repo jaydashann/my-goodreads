@@ -29,27 +29,6 @@
       "when": 1793842490306,
       "tag": "0003_furry_hedge_knight",
       "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1795066910743,
-      "tag": "0004_material_network",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1795068864440,
-      "tag": "0005_funny_blade",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1795071616288,
-      "tag": "0006_cooing_big_bertha",
-      "breakpoints": true
     }
   ]
 }

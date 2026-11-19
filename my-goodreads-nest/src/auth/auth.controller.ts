@@ -8,8 +8,8 @@ import { LocalAuthGuard } from './guard/local-auth.guard.js';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-<<<<<<< HEAD
   async login(@Request() req: any) {
     return this.authService.login(req.user);
   }
@@ -20,30 +20,6 @@ export class AuthController {
     await new Promise<void>((resolve, reject) =>
       req.logout((err: any) => (err ? reject(err) : resolve())),
     );
-=======
-  @UseGuards(LocalAuthGuard)
-  async login(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return await this.authService.createAuthTokens(user, response);
-  }
-
-  @Delete('logout')
-  @UseGuards(OptionalJwtAuthGuard)
-  async logout(
-    @Req()
-    req: Request & {
-      user?: UserRecord | null | undefined;
-      cookies?: Record<string, string> | null | undefined;
-    },
-    @Res() res: Response,
-  ): Promise<void> {
-    await this.authService.logout({
-      req,
-      res,
-    });
->>>>>>> bdf7d93 (feat: auth completed with modules and roles guard)
   }
 
   @UseGuards(JwtAuthGuard)
