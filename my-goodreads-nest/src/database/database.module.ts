@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/node-postgres';
+<<<<<<< HEAD
+=======
+import { Pool } from 'pg';
+>>>>>>> bdf7d93 (feat: auth completed with modules and roles guard)
 import { DATABASE_CONNECTION } from './database-connection.js';
 import { ConfigService } from '@nestjs/config';
 import * as userSchema from '../users/schema.js'

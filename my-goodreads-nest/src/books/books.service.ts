@@ -9,6 +9,7 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DATABASE_CONNECTION } from '../database/database-connection.js';
+import type { AppDb } from '../database/db.js';
 import { COVERS_DIR } from './cover-upload.js';
 import { CreateBookDto } from './dto/create-book.dto.js';
 import { UpdateBookDto } from './dto/update-book.dto.js';
@@ -19,7 +20,7 @@ import { books } from './schema.js';
 export class BooksService {
   constructor(
     @Inject(DATABASE_CONNECTION)
-    private readonly database: NodePgDatabase<typeof schema>,
+    private readonly database: AppDb,
   ) {}
 
   private async deleteCoverFile(filename?: string | null) {
@@ -29,13 +30,21 @@ export class BooksService {
 
   async getBooks(userId: string) {
     return this.database.query.books.findMany({
+<<<<<<< HEAD
       where: eq(books.user_id, userId),
+=======
+      where: eq(booksTable.user_id, userId),
+>>>>>>> bdf7d93 (feat: auth completed with modules and roles guard)
     });
   }
 
   async getBookById(userId: string, id: string) {
     return await this.database.query.books.findFirst({
+<<<<<<< HEAD
       where: and(eq(books.user_id, userId), eq(books.id, id)),
+=======
+      where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
+>>>>>>> bdf7d93 (feat: auth completed with modules and roles guard)
     });
   }
 
@@ -59,7 +68,11 @@ export class BooksService {
     coverImage?: string,
   ) {
     const existingBook = await this.database.query.books.findFirst({
+<<<<<<< HEAD
       where: and(eq(books.user_id, userId), eq(books.id, id)),
+=======
+      where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
+>>>>>>> bdf7d93 (feat: auth completed with modules and roles guard)
     });
 
     if (existingBook === undefined) {
@@ -102,7 +115,11 @@ export class BooksService {
 
   async removeBook(userId: string, id: string) {
     const existingBook = await this.database.query.books.findFirst({
+<<<<<<< HEAD
       where: and(eq(books.user_id, userId), eq(books.id, id)),
+=======
+      where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
+>>>>>>> bdf7d93 (feat: auth completed with modules and roles guard)
     });
 
     if (existingBook === undefined) {

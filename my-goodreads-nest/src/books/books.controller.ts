@@ -14,7 +14,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard.js';
+import { Modules } from '../common/decorators/modules.decorator.js';
+import { ModulesGuard } from '../common/guards/modules.guard.js';
+import { RolesGuard } from '../common/guards/roles.guard.js';
 import { ZodValidationPipe } from '../common/zod-validation.pipe.js';
+import { SystemModule } from '../system-module/system-module.enum.js';
 import { BooksService } from './books.service.js';
 import { coverUploadOptions } from './cover-upload.js';
 import type { CreateBookDto } from './dto/create-book.dto.js';
@@ -28,11 +32,15 @@ export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
+  @Modules(SystemModule.Books)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async getBooks(@CurrentUser('id') userId: string) {
     return this.booksService.getBooks(userId);
   }
 
   @Get(':id')
+  @Modules(SystemModule.Books)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async getBookById(
     @CurrentUser('id') userId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -41,6 +49,8 @@ export class BooksController {
   }
 
   @Post()
+  @Modules(SystemModule.Books)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('book_cover', coverUploadOptions))
   async createBook(
     @CurrentUser('id') userId: string,
@@ -51,6 +61,8 @@ export class BooksController {
   }
 
   @Patch(':id')
+  @Modules(SystemModule.Books)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('book_cover', coverUploadOptions))
   async updateBook(
     @CurrentUser('id') userId: string,
@@ -68,10 +80,12 @@ export class BooksController {
   }
 
   @Delete(':id')
+  @Modules(SystemModule.Books)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async removeBook(
     @CurrentUser('id') userId: string,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.booksService.removeBook(id, userId);
+    return this.booksService.removeBook(userId, id);
   }
 }
