@@ -14,6 +14,7 @@ export default function Dashboard() {
           <SearchFilter />
         </div>
         <Button onClick={() => setOpen(true)}>Add Book</Button>
+        <Button onClick={() => setOpen(true)}>Logout</Button>
         <AddBook open={open} onOpenChange={setOpen} />
       </div>
       <Tiles />

@@ -1,17 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { publicInstance } from "../../api/api";
 import PasswordInput from "../../components/password-input";
+import { Button } from "../../components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input";
 import { handleErrorWithToastNotification } from "../../lib/toast";
@@ -28,6 +28,7 @@ const FormSchema = z.object({
 
 export default function Login() {
   const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -54,6 +55,7 @@ export default function Login() {
         email: data.email.trim(),
         password: data.password.trim(),
       });
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.log(error);
     }
@@ -61,36 +63,54 @@ export default function Login() {
 
   return (
     <main>
-      <div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <PasswordInput placeholder="" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+      <div className="flex h-screen w-screen">
+        <div className="w-2/3 h-full bg-background flex items-center justify-center text-white">
+          logo
+        </div>
+        <div className="w-1/3 h-full bg-secondary flex items-center justify-center text-background">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="mt-3">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <PasswordInput placeholder="" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="mt-5">
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  variant={"login"}
+                  className="pl-25 pr-25"
+                >
+                  Login
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </main>
   );

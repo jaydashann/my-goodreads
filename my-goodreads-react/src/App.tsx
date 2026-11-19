@@ -6,4 +6,9 @@ import ReactRouter from "./router/router";
 //   return <Dashboard />;
 // }
 
-export const App = ReactRouter(<Route path="" element={<Login />} />);
+export const App = ReactRouter(
+  <>
+    <Route path="" element={<Login />} />
+    <Route path="/dashboard" element={<Dashboard />} />
+  </>,
+);
