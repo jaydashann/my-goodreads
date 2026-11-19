@@ -13,7 +13,7 @@ import { COVERS_DIR } from './cover-upload.js';
 import { CreateBookDto } from './dto/create-book.dto.js';
 import { UpdateBookDto } from './dto/update-book.dto.js';
 import * as schema from './schema.js';
-import { books } from './schema.js';
+import { booksTable } from './schema.js';
 
 @Injectable()
 export class BooksService {
@@ -28,14 +28,14 @@ export class BooksService {
   }
 
   async getBooks(userId: string) {
-    return this.database.query.books.findMany({
-      where: eq(books.user_id, userId),
+    return this.database.query.booksTable.findMany({
+      where: eq(booksTable.user_id, userId),
     });
   }
 
   async getBookById(userId: string, id: string) {
-    return await this.database.query.books.findFirst({
-      where: and(eq(books.user_id, userId), eq(books.id, id)),
+    return await this.database.query.booksTable.findFirst({
+      where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
     });
   }
 
@@ -43,7 +43,7 @@ export class BooksService {
     const { ...rest } = book;
 
     return this.database
-      .insert(schema.books)
+      .insert(schema.booksTable)
       .values({
         ...rest,
         user_id: userId,
@@ -58,8 +58,8 @@ export class BooksService {
     data: UpdateBookDto,
     coverImage?: string,
   ) {
-    const existingBook = await this.database.query.books.findFirst({
-      where: and(eq(books.user_id, userId), eq(books.id, id)),
+    const existingBook = await this.database.query.booksTable.findFirst({
+      where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
     });
 
     if (existingBook === undefined) {
@@ -70,16 +70,16 @@ export class BooksService {
     const author = data.author ?? existingBook.author;
 
     if (title !== existingBook.title || author !== existingBook.author) {
-      const duplicate = await this.database.query.books.findFirst({
+      const duplicate = await this.database.query.booksTable.findFirst({
         where: and(
-          eq(schema.books.user_id, userId),
-          ne(schema.books.id, id),
+          eq(schema.booksTable.user_id, userId),
+          ne(schema.booksTable.id, id),
           title === null
-            ? isNull(schema.books.title)
-            : eq(schema.books.title, title),
+            ? isNull(schema.booksTable.title)
+            : eq(schema.booksTable.title, title),
           author === null
-            ? isNull(schema.books.author)
-            : eq(schema.books.author, author),
+            ? isNull(schema.booksTable.author)
+            : eq(schema.booksTable.author, author),
         ),
       });
 
@@ -91,9 +91,9 @@ export class BooksService {
     }
 
     const [updatedBook] = await this.database
-      .update(schema.books)
+      .update(schema.booksTable)
       .set({ ...data, ...(coverImage && { book_cover: coverImage }) })
-      .where(and(eq(books.user_id, userId), eq(books.id, id)))
+      .where(and(eq(booksTable.user_id, userId), eq(booksTable.id, id)))
       .returning();
 
     if (coverImage) await this.deleteCoverFile(existingBook.book_cover);
@@ -101,8 +101,8 @@ export class BooksService {
   }
 
   async removeBook(userId: string, id: string) {
-    const existingBook = await this.database.query.books.findFirst({
-      where: and(eq(books.user_id, userId), eq(books.id, id)),
+    const existingBook = await this.database.query.booksTable.findFirst({
+      where: and(eq(booksTable.user_id, userId), eq(booksTable.id, id)),
     });
 
     if (existingBook === undefined) {
@@ -110,12 +110,12 @@ export class BooksService {
     }
 
     await this.database
-      .delete(schema.books)
-      .where(and(eq(books.user_id, userId), eq(books.id, id)));
+      .delete(schema.booksTable)
+      .where(and(eq(booksTable.user_id, userId), eq(booksTable.id, id)));
 
     await this.database
-      .delete(schema.books)
-      .where(and(eq(books.user_id, userId), eq(books.id, id)));
+      .delete(schema.booksTable)
+      .where(and(eq(booksTable.user_id, userId), eq(booksTable.id, id)));
     await this.deleteCoverFile(existingBook.book_cover);
     return { id };
   }
