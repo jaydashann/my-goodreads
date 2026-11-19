@@ -8,25 +8,25 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { users } from '../users/schema.js';
+import { usersTable } from '../users/schema.js';
 
-export const bookStatus = pgEnum('status', [
+export const bookStatusEnum = pgEnum('status', [
   'want-to-read',
   'currently-reading',
   'read',
   'did-not-finish',
 ]);
 
-export const books = pgTable('books', {
+export const booksTable = pgTable('books', {
   id: uuid('id').defaultRandom().primaryKey(),
   user_id: uuid('user_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => usersTable.id, { onDelete: 'cascade' }),
   book_cover: text('book_cover'),
   title: text('title'),
   author: text('author'),
   description: text('description'),
-  status: bookStatus('status').default('want-to-read'),
+  status: bookStatusEnum('status').default('want-to-read'),
   rating: doublePrecision('rating'),
   notes: text('notes'),
   started_at: date('started_at'),

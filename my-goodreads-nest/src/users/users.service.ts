@@ -4,14 +4,15 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { hash } from 'argon2';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { DATABASE_CONNECTION } from '../database/database-connection.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import * as schema from './schema.js';
-import { users } from './schema.js';
+import { UserRecord, userRefreshTokensTable, usersTable } from './schema.js';
 
 @Injectable()
 export class UsersService {
@@ -21,24 +22,125 @@ export class UsersService {
   ) {}
 
   async getUsers() {
-    return this.database.query.users.findMany();
+    return this.database.query.usersTable.findMany();
   }
 
   async findUserByEmail(email: string) {
-    return await this.database.query.users.findFirst({
-      where: eq(users.email, email),
+    return await this.database.query.usersTable.findFirst({
+      where: eq(usersTable.email, email),
     });
   }
 
   async findUserById(id: string) {
-    return await this.database.query.users.findFirst({
-      where: eq(users.id, id),
+    return await this.database.query.usersTable.findFirst({
+      where: eq(usersTable.id, id),
     });
   }
 
-  async createUser(user: typeof schema.users.$inferInsert) {
-    const existingEmail = await this.database.query.users.findFirst({
-      where: eq(users.email, user.email),
+  public async createUserRefreshToken({
+    currentUser,
+    tokenId,
+    tokenValue,
+    tokenExpiresAt,
+  }: {
+    currentUser: UserRecord;
+    tokenId: string;
+    tokenValue: string;
+    tokenExpiresAt: Date;
+  }) {
+    const [userRefreshTokenRecord] = await this.database
+      .insert(userRefreshTokensTable)
+      .values({
+        id: tokenId,
+        token: tokenValue,
+        userId: currentUser.id,
+        expiresAt: tokenExpiresAt,
+      })
+      .returning();
+
+    return {
+      userRefreshTokenRecord,
+    };
+  }
+
+  async updateUserRefreshToken({
+    currentUser,
+    tokenId,
+    tokenValue,
+    tokenExpiresAt,
+    dateNow,
+  }: {
+    currentUser: schema.UserRecord;
+    tokenId: string;
+    tokenValue: string;
+    tokenExpiresAt: Date;
+    dateNow: Date;
+  }) {
+    const userRefreshTokenRecords = await this.database
+      .update(userRefreshTokensTable)
+      .set({
+        id: tokenId,
+        token: tokenValue,
+        expiresAt: tokenExpiresAt,
+        updatedAt: dateNow,
+      })
+      .where(
+        and(
+          eq(userRefreshTokensTable.id, tokenId),
+          eq(userRefreshTokensTable.userId, currentUser.id),
+        ),
+      )
+      .returning();
+
+    if (userRefreshTokenRecords.length === 0) {
+      throw new UnauthorizedException(`No such token with Id ${tokenId}`);
+    }
+
+    const [userRefreshTokenRecord] = userRefreshTokenRecords;
+
+    return {
+      userRefreshTokenRecord,
+    };
+  }
+
+  async invalidateUserRefreshToken({
+    currentUser,
+    tokenId,
+    dateNow,
+  }: {
+    currentUser: schema.UserRecord;
+    tokenId: string;
+    dateNow: Date;
+  }) {
+    const userRefreshTokenRecords = await this.database
+      .update(userRefreshTokensTable)
+      .set({
+        id: tokenId,
+        expiresAt: dateNow,
+        updatedAt: dateNow,
+      })
+      .where(
+        and(
+          eq(userRefreshTokensTable.id, tokenId),
+          eq(userRefreshTokensTable.userId, currentUser.id),
+        ),
+      )
+      .returning();
+
+    if (userRefreshTokenRecords.length === 0) {
+      throw new UnauthorizedException(`No such token with ID ${tokenId}`);
+    }
+
+    const [userRefreshTokenRecord] = userRefreshTokenRecords;
+
+    return {
+      userRefreshTokenRecord,
+    };
+  }
+
+  async createUser(user: typeof usersTable.$inferInsert) {
+    const existingEmail = await this.database.query.usersTable.findFirst({
+      where: eq(usersTable.email, user.email),
     });
 
     if (existingEmail) {
@@ -46,7 +148,7 @@ export class UsersService {
     }
 
     const [data] = await this.database
-      .insert(schema.users)
+      .insert(schema.usersTable)
       .values({
         ...user,
         password: await hash(user.password),
@@ -56,8 +158,8 @@ export class UsersService {
   }
 
   async updateUser(id: string, data: UpdateUserDto) {
-    const existingUser = await this.database.query.users.findFirst({
-      where: eq(schema.users.id, id),
+    const existingUser = await this.database.query.usersTable.findFirst({
+      where: eq(schema.usersTable.id, id),
     });
 
     if (existingUser === undefined) {
@@ -65,8 +167,8 @@ export class UsersService {
     }
 
     if (data.email !== undefined && data.email !== existingUser.email) {
-      const emailTaken = await this.database.query.users.findFirst({
-        where: eq(schema.users.email, data.email),
+      const emailTaken = await this.database.query.usersTable.findFirst({
+        where: eq(schema.usersTable.email, data.email),
       });
 
       if (emailTaken !== undefined) {
@@ -75,24 +177,26 @@ export class UsersService {
     }
 
     const [updatedUser] = await this.database
-      .update(schema.users)
+      .update(schema.usersTable)
       .set(data)
-      .where(eq(schema.users.id, id))
+      .where(eq(schema.usersTable.id, id))
       .returning();
 
     return updatedUser;
   }
 
   async removeUser(id: string) {
-    const existingUser = await this.database.query.users.findFirst({
-      where: eq(schema.users.id, id),
+    const existingUser = await this.database.query.usersTable.findFirst({
+      where: eq(schema.usersTable.id, id),
     });
 
     if (existingUser === undefined) {
       throw new NotFoundException(`No user ID: ${id}`);
     }
 
-    await this.database.delete(schema.users).where(eq(schema.users.id, id));
+    await this.database
+      .delete(schema.usersTable)
+      .where(eq(schema.usersTable.id, id));
 
     return { id };
   }
