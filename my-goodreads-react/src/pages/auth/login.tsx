@@ -115,7 +115,3 @@ export default function Login() {
     </main>
   );
 }
-
-// export default function Login() {
-//   return <div>hello</div>;
-// }

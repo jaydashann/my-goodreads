@@ -1,8 +1,8 @@
-import { IoSearch } from "react-icons/io5";
-import { IoIosCloseCircle } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
-import { publicInstance } from "../api/api";
 import { useState } from "react";
+import { IoIosCloseCircle } from "react-icons/io";
+import { IoSearch } from "react-icons/io5";
+import { publicInstance } from "../api/api";
 
 type Books = {
   id: number;
@@ -21,58 +21,67 @@ type Books = {
 };
 
 async function fetchBookData() {
-    const result = await publicInstance.get<Books[]>('/books')
-    return result.data
-};
+  const result = await publicInstance.get<Books[]>("/books");
+  return result.data;
+}
 
 export default function SearchFilter() {
-    const {
-        status,
-        data,
-        error
-    } = useQuery({ 
-        queryKey: ["BOOK_DATA"], 
-        queryFn: fetchBookData,
-    });
+  const { status, data, error } = useQuery({
+    queryKey: ["BOOK_DATA"],
+    queryFn: fetchBookData,
+  });
 
-    if (status === "pending") return <div>Loading...</div>;
-    if (status === "error") return <div>Error: {error.message}</div>;
+  const [searchQuery, setSearchQuery] = useState("");
 
-    const [searchQuery, setSearchQuery] = useState("");
+  const clearSearchQuery = () => {
+    setSearchQuery("");
+  };
 
-    const clearSearchQuery = () => {
-        setSearchQuery("");
-    };
+  const filterData = data?.filter((books) =>
+    `${books.title}`.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
-    const filterData = data?.filter(books => 
-        `${books.title}`
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    );
+  if (status === "pending") return <div>Loading...</div>;
+  if (status === "error") return <div>Error: {error.message}</div>;
 
-    return (
-        <div>
-            <div className="mb-6 relative">
-                <div className="flex items-center rounded-lg p-2 gap-2 bg-primary rounded cursor-pointer">
-                    <IoSearch className="text-textcolor ml-1" />
-                    <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full text-textcolor outline-none"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.currentTarget.value)}
-                    />
-                    {searchQuery.length > 0 && (<IoIosCloseCircle className="text-textcolor mr-1" onClick={clearSearchQuery}/>)}
-                </div>
-                {searchQuery.length > 0 && (<div className="absolute max-h-[200px] w-full overflow-auto flex flex-col p-1 bg-accent/80 shadow-2xl rounded">
-                    {filterData.length !== 0 ? filterData?.map((books, i) => (
-                        <div key={i} className="flex items-center hover:bg-primary/50 rounded p-2 pl-3 pointer-cursor text-background">
-                            <div>{`${books.title}`}</div>
-                        </div>
-                    )): <div className="flex items-center justify-center text-sm text-background font-semibold p-2">No book available</div>}
-                </div>)}
-            </div>
-            
+  return (
+    <div>
+      <div className="mb-6 relative">
+        <div className="flex items-center rounded-lg p-2 gap-2 bg-primary rounded cursor-pointer">
+          <IoSearch className="text-textcolor ml-1" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full text-textcolor outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+          />
+          {searchQuery.length > 0 && (
+            <IoIosCloseCircle
+              className="text-textcolor mr-1"
+              onClick={clearSearchQuery}
+            />
+          )}
         </div>
-    );
+        {searchQuery.length > 0 && (
+          <div className="absolute max-h-[200px] w-full overflow-auto flex flex-col p-1 bg-accent/80 shadow-2xl rounded">
+            {filterData.length !== 0 ? (
+              filterData?.map((books, i) => (
+                <div
+                  key={i}
+                  className="flex items-center hover:bg-primary/50 rounded p-2 pl-3 pointer-cursor text-background"
+                >
+                  <div>{`${books.title}`}</div>
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center text-sm text-background font-semibold p-2">
+                No book available
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
