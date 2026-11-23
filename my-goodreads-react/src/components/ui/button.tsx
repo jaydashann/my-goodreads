@@ -11,7 +11,8 @@ const buttonVariants = cva(
         primary:
           "bg-gradient-to-r from-primary to-primary/60 text-white shadow hover:opacity-90",
         default: "bg-accent text-textcolor shadow-xs hover:bg-accent/80",
-        login: "bg-background text-textcolor shadow-xs hover:bg-accent/80",
+        login: "bg-background text-primary shadow-xs hover:bg-accent/80",
+        logout: "bg-red text-primary shadow-xs hover:bg-red/80",
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3",

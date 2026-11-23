@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @source "../node_modules/react-tailwindcss-datepicker/dist/index.esm.js";
@@ -6,16 +7,25 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: #2F4F3E;
-  --color-form: #E4ECDF;
-  --color-textcolor: #1F2A24;
-  --color-captioncolor: #5A6B60;
-  --color-primary: #F7F5EE;
-  --color-secondary: #A9BFA0;
-  --color-accent: #F2A65A;
+  --font-sans: "Poppins", sans-serif;
+
+  --color-background: #ffffff;
+  --color-secondary: #2f4f3e;
+  --color-form: #e4ecdf;
+  --color-grayscale: #7e7e77;
+  --color-sideborder: #d2d2cc;
+  --color-textcolor: #1f2a24;
+  --color-captioncolor: #5a6b60;
+  --color-primary: #e5e5e0;
+  /* --color-secondary: #a9bfa0; */
+  --color-accent: #f2a65a;
+  --color-red: #f25a5a;
+}
+
+body {
+  font-family: var(--font-sans);
 }
 
 .opacity-1 {
   opacity: 1 !important;
 }
-
