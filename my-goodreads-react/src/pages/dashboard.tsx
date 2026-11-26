@@ -1,96 +1,127 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { AiOutlineMessage } from "react-icons/ai";
+import { CgProfile } from "react-icons/cg";
 import { FaBookOpenReader } from "react-icons/fa6";
 import { IoSettingsOutline } from "react-icons/io5";
 import { PiBell } from "react-icons/pi";
+import { SlArrowDown } from "react-icons/sl";
 import { TbLayoutCollage } from "react-icons/tb";
 import { VscDiffAdded, VscHome } from "react-icons/vsc";
-import { useNavigate } from "react-router-dom";
-import AddBookBar from "../components/add-book-bar";
-import { AddBook } from "../components/add-book-dialog";
+import FilterBar from "../components/filter-bar";
 import SearchFilter from "../components/search-filter";
+import AddBookBar from "../components/sidebars/add-book-bar";
+import MessageBar from "../components/sidebars/message-bar";
+import SettingsBar from "../components/sidebars/settings-bar";
+import UpdatesBar from "../components/sidebars/updates-bar";
 import Tiles from "../components/tiles";
-import { Button } from "../components/ui/button";
-import { useLogout } from "../hooks/auth/useLogout";
-
-function SideBarIcon({ icon: Icon, label, onClick }) {
-  return (
-    <div className="group relative">
-      <button onClick={onClick} className="cursor-pointer">
-        <Icon />
-      </button>
-
-      <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-lg bg-black px-3 py-2 text-sm font-sm text-white opacity-0 transition-opacity group-hover:opacity-100">
-        {label}
-      </span>
-    </div>
-  );
-}
+import { IconLabel } from "../components/ui/hover-label";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
   const [bookPanel, setBookPanel] = useState(false);
-  const { mutateAsync: logout } = useLogout();
-
-  async function handleLogout() {
-    try {
-      await logout();
-      navigate("/");
-      toast.success("Successfully logged out.");
-    } catch (error) {
-      console.error(error);
-      toast.success("Logout failed. Try again.");
-    }
-  }
+  const [settingsPanel, setSettingsPanel] = useState(false);
+  const [updatesPanel, setUpdatesPanel] = useState(false);
+  const [messagePanel, setMessagePanel] = useState(false);
 
   return (
     <div className="flex h-screen w-screen">
       <div className="flex flex-col justify-between w-18 shrink-0 h-full bg-background border-r border-sideborder">
         <div className="flex flex-col items-center">
           <div className="text-3xl text-secondary mt-6 m-4">
-            <SideBarIcon icon={FaBookOpenReader} label="Home" />
+            <IconLabel
+              icon={FaBookOpenReader}
+              label="Home"
+              variant={"side"}
+              textVariant={"side"}
+            />
           </div>
           <div className="text-3xl m-5">
-            <SideBarIcon icon={VscHome} label="Home" />
+            <IconLabel
+              icon={VscHome}
+              label="Home"
+              variant={"side"}
+              textVariant={"side"}
+            />
           </div>
           <div className="text-3xl m-3">
-            <SideBarIcon icon={TbLayoutCollage} label="Your books" />
+            <IconLabel
+              icon={TbLayoutCollage}
+              label="Your books"
+              variant={"side"}
+              textVariant={"side"}
+            />
           </div>
           <div className="text-3xl m-6">
-            <SideBarIcon
+            <IconLabel
               icon={VscDiffAdded}
               label="Create"
               onClick={() => setBookPanel((curr) => !curr)}
+              variant={"side"}
+              textVariant={"side"}
             />
           </div>
           <div className="text-3xl m-2">
-            <SideBarIcon icon={PiBell} label="Updates" />
+            <IconLabel
+              icon={PiBell}
+              label="Updates"
+              onClick={() => setUpdatesPanel((curr) => !curr)}
+              variant={"side"}
+              textVariant={"side"}
+            />
           </div>
           <div className="text-3xl m-6">
-            <SideBarIcon icon={AiOutlineMessage} label="Messages" />
+            <IconLabel
+              icon={AiOutlineMessage}
+              label="Messages"
+              onClick={() => setMessagePanel((curr) => !curr)}
+              variant={"side"}
+              textVariant={"side"}
+            />
           </div>
         </div>
         <div className="flex flex-col items-center m-5">
           <div className="text-3xl">
-            <SideBarIcon icon={IoSettingsOutline} label="Settings" />
+            <IconLabel
+              icon={IoSettingsOutline}
+              label="Settings & Support"
+              variant={"side"}
+              textVariant={"side"}
+              onClick={() => setSettingsPanel((curr) => !curr)}
+            />
           </div>
         </div>
       </div>
 
       <AddBookBar open={bookPanel} onClose={() => setBookPanel(false)} />
+      <SettingsBar
+        open={settingsPanel}
+        onClose={() => setSettingsPanel(false)}
+      />
+      <UpdatesBar open={updatesPanel} onClose={() => setUpdatesPanel(false)} />
+      <MessageBar open={messagePanel} onClose={() => setMessagePanel(false)} />
 
       <div className="h-full min-w-0 flex-1 overflow-y-auto">
-        <div className="flex gap-3 p-4">
-          <div className="flex-1">
+        <div className="flex w-full items-center gap-3 p-4">
+          <div className="min-w-0 flex-1">
             <SearchFilter />
           </div>
-          <Button onClick={() => setOpen(true)}>Add Book</Button>
-          <Button variant={"logout"} onClick={handleLogout}>
-            Logout
-          </Button>
-          <AddBook open={open} onOpenChange={setOpen} />
+          <IconLabel
+            icon={CgProfile}
+            label="Your Profile"
+            variant={"profile"}
+            textVariant={"profile"}
+          />
+          <button className="rounded transition-all hover:bg-grayscale/10 p-1">
+            {/* <AccountsIcon icon={IoIosArrowDown} label="Accounts" /> */}
+            <IconLabel
+              icon={SlArrowDown}
+              label="Accounts"
+              variant={"account"}
+              textVariant={"account"}
+            />
+          </button>
+        </div>
+        <div className="mt-3 mb-5 ml-8">
+          <FilterBar />
         </div>
         <div className="px-4 pb-4">
           <Tiles />

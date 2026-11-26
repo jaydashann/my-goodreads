@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { FaRegHeart } from "react-icons/fa";
+import { LuMessageCircle } from "react-icons/lu";
+import { MdMoreHoriz } from "react-icons/md";
+import { RiShare2Line } from "react-icons/ri";
 import { publicInstance } from "../api/api";
 import Card from "./card";
-import { Star } from "./star-rating";
 import { getCoverUrl } from "./tiles";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
@@ -37,12 +39,6 @@ async function deleteBook(id: string) {
 function BookInfo({ book, open, onOpenChange }: BookInfoProps) {
   const queryClient = useQueryClient();
 
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const toggleExpansion = () => {
-    setIsExpanded((prevState) => !prevState);
-  };
-
   const deleteMutation = useMutation({
     mutationFn: deleteBook,
     onSuccess: () => {
@@ -56,90 +52,49 @@ function BookInfo({ book, open, onOpenChange }: BookInfoProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[750px]">
+      <DialogContent className="sm:max-w-[800px] bg-white border border-3 border-background">
         {book && (
-          <div className="w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex gap-6">
-              {/* book cover and rating */}
-              <div className="w-40 shrink-0 sm:w-48">
-                <div className="aspect-[2/3] w-full rounded">
-                  <Card image={getCoverUrl(book.book_cover)} />
-                  <div className="flex items-center justify-center mt-3">
-                    <h1 className="mr-1 font-semibold text-lg">
-                      {book.rating}
-                    </h1>
-                    {...Array.from({ length: 5 }, (_, index) => (
-                      <Star
-                        key={index}
-                        size={28}
-                        fill={Math.max(0, Math.min(book.rating - index, 1))}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              {/* book info */}
-              <div className="flex min-w-0 flex-1 flex-col">
-                {/* title */}
-                <DialogTitle className="text-3xl leading-tight text-right">
-                  {book.title}
-                </DialogTitle>
-                {/* author */}
-                <div className="mt-1 text-lg opacity-80 text-right">
-                  {book.author}
-                </div>
-                {/* <div className="flex justify-end">
-                  <h1 className="mr-1 font-semibold">{book.rating}</h1>
-                  {...Array.from({ length: 5 }, (_, index) => (
-                    <Star
-                      key={index}
-                      size={20}
-                      fill={Math.max(0, Math.min(book.rating - index, 1))}
-                    />
-                  ))}
-                </div> */}
-                {/* description */}
-                <div>
-                  <h1 className="pr-3 pl-3 bg-background font-semibold">
-                    Description
-                  </h1>
-                  <div className="pr-3 pl-3 text-justify">
-                    <div>
-                      {isExpanded
-                        ? book.description
-                        : `${book.description.substring(0, 500)}...`}
-                    </div>
-                    <button
-                      className="underline hover:text-accent cursor-pointer"
-                      onClick={toggleExpansion}
-                    >
-                      {isExpanded ? "Read Less" : "Read More"}
-                    </button>
-                  </div>
-                </div>
-                {/* notes */}
-                <div>
-                  <h1 className="pr-3 pl-3 mt-4 font-semibold">Notes</h1>
-                  <div className="pr-3 pl-3 text-justify">{book.notes}</div>
-                </div>
-                {/* start and end date */}
-                <div className="flex pr-3 pl-3 mt-4">
-                  <h1 className="mt-2 mr-2 font-medium">Started:</h1>
-                  <h1 className="bg-background p-2 mr-4 rounded text-primary font-medium">
-                    {book.started_at}
-                  </h1>
-                  <h1 className="mt-2 mr-1 font-medium">Finished:</h1>
-                  <h1 className="bg-background p-2 ml-1 rounded text-primary font-medium">
-                    {book.completed_at}
-                  </h1>
-                </div>
-              </div>
+          <div className="flex w-full max-h-[80vh] overflow-y-auto">
+            <div className="shrink-0 max-w-[40%]">
+              <Card image={getCoverUrl(book.book_cover)} />
             </div>
-            <div className="flex justify-end">
-              <Button className="mr-3">Edit</Button>
-              <Button onClick={() => deleteMutation.mutate(book.id)}>
-                {deleteMutation.isPending ? "Deleting..." : "Delete"}
-              </Button>
+            <div className="group relative flex-1 min-w-0">
+              <div className="flex h-full flex-col justify-between">
+                <div>
+                  {/* icons, delete */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <FaRegHeart className="ml-8 text-2xl" />
+                      <h1 className="ml-2 font-medium">78</h1>
+                      <LuMessageCircle className="ml-6 text-2xl" />
+                      <RiShare2Line className="ml-6 text-2xl" />
+                      <MdMoreHoriz className="ml-6 text-2xl" />
+                    </div>
+                    <Button
+                      className="px-3 py-6 text-sm font-medium"
+                      variant="edit"
+                      onClick={() => deleteMutation.mutate(book.id)}
+                    >
+                      {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                    </Button>
+                  </div>
+
+                  {/* title, author */}
+                  <div className="m-3 ml-5">
+                    <DialogTitle className="text-2xl">{book.title}</DialogTitle>
+                    <h1 className="ml-1">by {book.author}</h1>
+                    <hr className="mt-2 h-0.5 border-t-0 bg-gray-200" />
+                  </div>
+                </div>
+
+                {/* edit button */}
+                <Button
+                  variant={"edit"}
+                  className="pr-48 pl-48 mr-2 self-end bg-primary text-black font-medium h-13 rounded-2xl hover:bg-black/15"
+                >
+                  Edit
+                </Button>
+              </div>
             </div>
           </div>
         )}

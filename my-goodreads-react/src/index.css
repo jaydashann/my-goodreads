@@ -19,7 +19,8 @@
   --color-primary: #e5e5e0;
   /* --color-secondary: #a9bfa0; */
   --color-accent: #f2a65a;
-  --color-red: #f25a5a;
+  --color-red: #e60023;
+  --color-hover: #f6f6f3;
 }
 
 body {

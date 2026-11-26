@@ -64,7 +64,7 @@ export default function SearchFilter() {
       </div>
       {searchQuery.length > 0 && (
         <div className="absolute max-h-[200px] w-full overflow-auto flex flex-col p-1 bg-accent/80 shadow-2xl rounded">
-          {filterData.length !== 0 ? (
+          {filterData?.length !== 0 ? (
             filterData?.map((books, i) => (
               <div
                 key={i}

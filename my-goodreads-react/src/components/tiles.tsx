@@ -4,6 +4,7 @@ import { publicInstance } from "../api/api";
 import { BookInfo } from "./book-info-dialog";
 import Card from "./card";
 import { Star } from "./star-rating";
+import { Button } from "./ui/button";
 
 type Books = {
   id: string;
@@ -58,14 +59,25 @@ export default function Tiles() {
         {data.map((book, i) => (
           <div
             key={book.id}
-            className="text-center text-textcolor mb-4 break-inside-avoid rounded-2xl bg-background transition-all hover:scale-102"
+            className="text-center text-textcolor mb-4 break-inside-avoid rounded-2xl bg-background"
             onClick={() => setSelectedBook(book)}
           >
-            <div className="w-full overflow-hidden rounded">
+            <div className="group relative rounded-xl shadow-md w-full overflow-hidden rounded">
+              {/* <div className="absolute inset-0 bg-gradient-to-b from-black rounded-xl opacity-0 hover:opacity-100 transition-all duration-300 ease-in-out"></div> */}
               <Card image={getCoverUrl(book.book_cover)} />
+              <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-b from-neutral-600 opacity-0 transition-opacity duration-300 group-hover:opacity-70" />
+              <Button
+                variant={"edit"}
+                className="absolute right-2 top-2 z-10 opacity-0 group-hover:opacity-100 bg-red font-medium m-1"
+              >
+                Edit
+              </Button>
             </div>
-            <div>
-              <h1>{book.title}</h1>
+            <div className=" flex w-full min-w-0 px-1 pt-1 text-left text-sm font-medium">
+              <h1 title={book.title}>{book.title}</h1>
+              <p className="truncate" title={book.author}>
+                : {book.author}
+              </p>
             </div>
             {/* <div className="bg-background text-primary font-semibold p-1 m-2 mb-1 rounded">
               <h1>{book.title}</h1>
